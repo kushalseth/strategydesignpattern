@@ -1,8 +1,11 @@
-﻿using Strategy_Pattern_First_Look.Business.Strategies.SalesTax;
+﻿using Strategy_Pattern_Using_different_shipping_providers.Business.Strategies.Invoice;
+using Strategy_Pattern_Using_different_shipping_providers.Business.Strategies.SalesTax;
+using Strategy_Pattern_Using_different_shipping_providers.Business.Strategies.Shipping;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Strategy_Pattern_First_Look.Business.Models
+namespace Strategy_Pattern_Using_different_shipping_providers.Business.Models
 {
     public class Order
     {
@@ -22,6 +25,10 @@ namespace Strategy_Pattern_First_Look.Business.Models
 
         public ISalesTaxStrategy SalesTaxStrategy { get; set; }
 
+        public IInvoiceStrategy InvoiceStrategy { get; set; }
+
+        public IShippingStrategy ShippingStrategy { get; set; }
+
         public decimal GetTax()
         {
             if(SalesTaxStrategy == null)
@@ -30,6 +37,24 @@ namespace Strategy_Pattern_First_Look.Business.Models
             }
 
             return SalesTaxStrategy.GetTaxFor(this);
+        }
+
+        public void FinalizeOrder()
+        {
+            if(SelectedPayments.Any(x => x.PaymentProvider == PaymentProvider.Invoice) &&
+               AmountDue > 0 && 
+               ShippingStatus == ShippingStatus.WaitingForPayment)
+            {
+                InvoiceStrategy.Generate(this);
+
+                ShippingStatus = ShippingStatus.ReadyForShippment;
+            }
+            else if(AmountDue > 0)
+            {
+                throw new Exception("Unable to finalize order");
+            }
+
+            ShippingStrategy.Ship(this);
         }
     }
 

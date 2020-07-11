@@ -1,6 +1,6 @@
-﻿using Strategy_Pattern_First_Look.Business.Models;
+﻿using Strategy_Pattern_Using_different_shipping_providers.Business.Models;
 
-namespace Strategy_Pattern_First_Look.Business.Strategies.SalesTax
+namespace Strategy_Pattern_Using_different_shipping_providers.Business.Strategies.SalesTax
 {
     public class USAStateSalesTaxStrategy : ISalesTaxStrategy
     {
